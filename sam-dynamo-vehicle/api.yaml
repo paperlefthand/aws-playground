@@ -1,0 +1,90 @@
+openapi: 3.0.0
+info:
+  title: Vehicle API
+  version: 1.0.0
+paths:
+  /vehicles/{userId}:
+    get:
+      summary: Retrieve vehicles by user ID
+      parameters:
+        - name: userId
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Vehicle'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Vehicle not found'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+    post:
+      summary: Add a new vehicle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Vehicle'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Vehicle added successfully'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+components:
+  schemas:
+    Vehicle:
+      type: object
+      properties:
+        vehicleId:
+          type: string
+          example: XXX
+        make:
+          type: string
+          example: toyota
+        name:
+          type: string
+          example: corolla
+      required:
+        - vehicleId
+
+    InternalServerError:
+        type: object
+        properties:
+          message:
+            type: string
+            example: 'Internal Server Error'

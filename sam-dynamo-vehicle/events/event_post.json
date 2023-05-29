@@ -1,0 +1,5 @@
+{
+  "httpMethod": "POST",
+  "body": "{\"vehicleId\": \"vehicle1\", \"make\": \"Toyota\", \"model\": \"Camry\"}",
+  "pathParameters": {"userId": "xxx"}
+}

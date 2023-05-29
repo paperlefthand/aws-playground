@@ -1,0 +1,155 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  sam-dynamo-vehicle
+
+Parameters:
+  Prefix:
+    Type: String
+    Default: sam-dynamo-vehicle
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 256
+    Runtime: python3.9
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref VehicleTable
+
+Resources:
+  # VehicleApiGateway:
+  #   Type: AWS::Serverless::Api
+  #   Properties:
+  #     StageName: prod
+      # DefinitionUri: api.yaml
+      # DefinitionBody:
+      #   openapi: 3.0.1
+      #   info:
+      #     title: Vehicle API
+      #     version: 1.0.0
+      #   paths:
+      #     /vehicles/{userId}:
+      #       get:
+      #         summary: Retrieve vehicles by user ID
+      #         parameters:
+      #           - name: userId
+      #             in: path
+      #             description: User ID
+      #             required: true
+      #             schema:
+      #               type: string
+      #         responses:
+      #           '200':
+      #             description: OK
+      #             content:
+      #               application/json:
+      #                 schema:
+      #                   type: array
+      #                   items:
+      #                     $ref: '#/components/schemas/Vehicle'
+      #           '404':
+      #             description: Not Found
+      #             content:
+      #               application/json:
+      #                 schema:
+      #                   type: object
+      #                   properties:
+      #                     message:
+      #                       type: string
+      #                       example: 'Vehicle not found'
+      #           '500':
+      #             description: Internal Server Error
+      #             content:
+      #               application/json:
+      #                 schema:
+      #                   $ref: '#/components/schemas/InternalServerError'
+      #       post:
+      #         summary: Add a new vehicle
+      #         requestBody:
+      #           required: true
+      #           content:
+      #             application/json:
+      #               schema:
+      #                 $ref: '#/components/schemas/Vehicle'
+      #         responses:
+      #           '201':
+      #             description: Created
+      #             content:
+      #               application/json:
+      #                 schema:
+      #                   type: object
+      #                   properties:
+      #                     message:
+      #                       type: string
+      #                       example: 'Vehicle added successfully'
+      # EndpointConfiguration: 
+      #   Type: REGIONAL
+      # Auth:
+      #   ApiKeyRequired: false
+
+  VehicleTable:
+    Type: "AWS::DynamoDB::Table"
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "userId"
+          AttributeType: "S"
+        - AttributeName: "vehicleId"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "userId"
+          KeyType: "HASH"
+        - AttributeName: "vehicleId"
+          KeyType: "RANGE"
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      TableName: "user-vehicles"
+
+  VehiclePostFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/
+      Handler: vehicles_post_handler.add_vehiclet
+      # Policies: AWSLambdaDynamoDBExecutionRole
+      Policies: 
+        DynamoDBCrudPolicy:
+          TableName: !Ref VehicleTable
+      Events:
+        VehicleApiGatewayPost:
+          Type: Api
+          Properties:
+            # RestApiId: !Ref VehicleApiGateway
+            Path: /vehicles/{userId}
+            Method: post
+
+  VehicleGetFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/
+      Handler: vehicles_get_handler.get_vehiclet
+      # Policies: AWSLambdaDynamoDBExecutionRole
+      Policies: 
+        DynamoDBReadPolicy:
+          TableName: !Ref VehicleTable
+      Events:
+        VehicleApiGatewayGet:
+          Type: Api
+          Properties:
+            # RestApiId: !Ref VehicleApiGateway
+            Path: /vehicles/{userId}
+            Method: get
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  VehicleApiGateway:
+    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/vehicles/"
+  VehiclePostFunction:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt VehiclePostFunction.Arn
+  VehiclePostFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt VehiclePostFunctionRole.Arn

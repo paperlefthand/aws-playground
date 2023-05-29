@@ -1,8 +1,4 @@
 # sam-app-001
-```
-An error occurred (AccessDeniedException) when calling the GetItem operation: User: arn:aws:sts::075315463706:assumed-role/sam-dynamo-vehicle-VehicleGetFunctionRole-Y4TRI9POUNRS/sam-dynamo-vehicle-VehicleGetFunction-3yquInQHOOZ3 is not authorized to perform: dynamodb:GetItem on resource: arn:aws:dynamodb:ap-northeast-1:075315463706:table/user-vehicles because no identity-based policy allows the dynamodb:GetItem action
-
-```
 
 ```bash
 sam validate
@@ -17,7 +13,6 @@ curl -X POST -d @data/vehicle.json -H "Content-Type: application/json" http://12
 curl http://127.0.0.1:3000/vehicles/xxx
 
 sam build --use-container 
-cp exclude.txt .aws-sam/build/
 sam deploy --guided
 curl -X POST -d @data/vehicle.json -H "Content-Type: application/json" URL/xxx
 curl URL/xxx

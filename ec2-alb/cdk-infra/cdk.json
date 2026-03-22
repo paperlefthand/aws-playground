@@ -1,10 +1,7 @@
 {
-  "profile": "stage",
   "app": "npx ts-node --prefer-ts-exts bin/cdk-infra.ts",
   "watch": {
-    "include": [
-      "**"
-    ],
+    "include": ["**"],
     "exclude": [
       "README.md",
       "cdk*.json",
@@ -26,10 +23,7 @@
     "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": true,
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/core:checkSecretUsage": true,
-    "@aws-cdk/core:target-partitions": [
-      "aws",
-      "aws-cn"
-    ],
+    "@aws-cdk/core:target-partitions": ["aws", "aws-cn"],
     "@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver": true,
     "@aws-cdk/aws-ec2:uniqueImdsv2TemplateName": true,
     "@aws-cdk/aws-ecs:arnFormatIncludesClusterName": true,

@@ -1,0 +1,11 @@
+*.js
+!jest.config.js
+*.d.ts
+node_modules
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+# アカウントIDの公開を避けるために, git管理から除外. AMIのID変化は許容する
+cdk.context.json

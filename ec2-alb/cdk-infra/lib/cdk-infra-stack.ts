@@ -7,7 +7,16 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as path from 'path';
 import * as fs from 'fs';
 
+/**
+ * Infrastructure stack for the EC2 ALB FastAPI Reference application.
+ */
 export class CdkInfraStack extends cdk.Stack {
+  /**
+   * Constructs the stack.
+   * @param scope - The construct scope.
+   * @param id - The construct ID.
+   * @param props - The stack properties.
+   */
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -90,10 +99,9 @@ export class CdkInfraStack extends cdk.Stack {
 
     // Read userdata script from extracted file
     const scriptPath = path.join(__dirname, '../../scripts/user-data.sh');
-    let userDataCommands = '';
-    if (fs.existsSync(scriptPath)) {
-      userDataCommands = fs.readFileSync(scriptPath, 'utf8');
-    }
+    const userDataCommands = fs.existsSync(scriptPath)
+      ? fs.readFileSync(scriptPath, 'utf8')
+      : '';
 
     // 7. Auto Scaling Group (ASG)
     const asg = new autoscaling.AutoScalingGroup(this, 'AppASG', {
@@ -105,8 +113,8 @@ export class CdkInfraStack extends cdk.Stack {
       machineImage: ami,
       securityGroup: appSg,
       role: appRole,
-      minCapacity: asgMinCapacity as number,
-      maxCapacity: asgMaxCapacity as number,
+      minCapacity: Number(asgMinCapacity),
+      maxCapacity: Number(asgMaxCapacity),
       init: initConfig,
       signals: autoscaling.Signals.waitForAll({
         timeout: cdk.Duration.minutes(10),

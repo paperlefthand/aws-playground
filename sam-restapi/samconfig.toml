@@ -1,0 +1,12 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "sam-restapi"
+resolve_s3 = true
+s3_prefix = "sam-restapi"
+region = "ap-northeast-1"
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = true
+
+[default.local_start_api.parameters]
+warm_containers = "LAZY"

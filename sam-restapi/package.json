@@ -1,0 +1,27 @@
+{
+  "name": "sam-restapi",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "sam build",
+    "test": "jest",
+    "local:api": "sam local start-api",
+    "local:invoke": "sam local invoke UserServiceFunction",
+    "deploy": "sam deploy",
+    "validate": "sam validate --lint"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.145",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.10.1",
+    "esbuild": "^0.24.0",
+    "jest": "^30",
+    "ts-jest": "^29",
+    "typescript": "~5.9.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3",
+    "@aws-sdk/lib-dynamodb": "^3"
+  },
+  "packageManager": "npm@11.14.1"
+}

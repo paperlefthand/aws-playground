@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: User Service REST API (TypeScript Lambda, spec source = main.tsp)
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Timeout: 30
+    MemorySize: 256
+    Architectures: [x86_64]
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref ItemsTable
+
+Resources:
+  ItemsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+        - AttributeName: sk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+        - AttributeName: sk
+          KeyType: RANGE
+
+  UserServiceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: handler.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ItemsTable
+      Events:
+        UsersRoot:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: ANY
+        UsersProxy:
+          Type: Api
+          Properties:
+            Path: /users/{proxy+}
+            Method: ANY
+        MeRoot:
+          Type: Api
+          Properties:
+            Path: /me
+            Method: ANY
+        MeProxy:
+          Type: Api
+          Properties:
+            Path: /me/{proxy+}
+            Method: ANY
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: false
+        Target: es2022
+        Sourcemap: true
+        EntryPoints:
+          - handler.ts
+        External:
+          - "@aws-sdk/*"
+
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+  FunctionArn:
+    Description: Lambda Function ARN
+    Value: !GetAtt UserServiceFunction.Arn
+  TableName:
+    Description: DynamoDB Table Name
+    Value: !Ref ItemsTable

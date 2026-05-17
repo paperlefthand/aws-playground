@@ -1,0 +1,18 @@
+{
+  "httpMethod": "GET",
+  "path": "/me",
+  "resource": "/me",
+  "headers": {
+    "Authorization": "Bearer u-1:member"
+  },
+  "queryStringParameters": null,
+  "pathParameters": null,
+  "body": null,
+  "isBase64Encoded": false,
+  "requestContext": {
+    "httpMethod": "GET",
+    "path": "/me",
+    "resourcePath": "/me",
+    "stage": "Prod"
+  }
+}

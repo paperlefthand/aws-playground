@@ -7,9 +7,10 @@
     "openapi": "tsp compile main.tsp && npm run openapi:aws",
     "openapi:aws": "node scripts/inject-apigw-integration.mjs",
     "test": "jest",
-    "local:api": "sam local start-api",
-    "local:invoke": "sam local invoke UserServiceFunction",
-    "deploy": "sam deploy",
+    "local:api": "dotenv -e .env -- cross-env PYTHONUTF8=1 sam local start-api",
+    "local:invoke": "dotenv -e .env -- cross-env PYTHONUTF8=1 sam local invoke UserServiceFunction",
+    "deploy": "dotenv -e .env -- node scripts/deploy.mjs",
+    "destroy": "dotenv -e .env -- cross-env-shell \"sam delete --stack-name sam-restapi --region ap-northeast-1 --profile $AWS_PROFILE --no-prompts\"",
     "validate": "sam validate --lint"
   },
   "devDependencies": {
@@ -22,6 +23,8 @@
     "@typespec/openapi": "^1.12.0",
     "@typespec/openapi3": "^1.12.0",
     "@typespec/rest": "^0.82.0",
+    "cross-env": "^10.1.0",
+    "dotenv-cli": "^11.0.0",
     "esbuild": "^0.24.0",
     "jest": "^30",
     "js-yaml": "^4.1.1",

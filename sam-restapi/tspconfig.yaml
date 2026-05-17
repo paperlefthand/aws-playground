@@ -3,5 +3,7 @@ emit:
 options:
   "@typespec/openapi3":
     emitter-output-dir: "{project-root}/openapi"
+    # AWS API Gateway の OpenAPI インポートは 3.0.x のみ対応。
+    # 3.1.0 を出力すると CREATE_FAILED ("Invalid OpenAPI input") になる。
     openapi-versions:
-      - 3.1.0
+      - "3.0.0"

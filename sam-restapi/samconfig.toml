@@ -1,11 +1,14 @@
 version = 0.1
 
+# S3 bucket and AWS profile are passed via CLI flags by `npm run deploy`
+# (sourced from environment variables SAM_S3_BUCKET / AWS_PROFILE).
+# See README for details.
+
 [default.deploy.parameters]
 stack_name = "sam-restapi"
-resolve_s3 = true
-s3_prefix = "sam-restapi"
 region = "ap-northeast-1"
 capabilities = "CAPABILITY_IAM"
+s3_prefix = "sam/sam-restapi"
 confirm_changeset = true
 
 [default.local_start_api.parameters]

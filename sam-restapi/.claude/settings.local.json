@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npm run:*)",
+      "Bash(npm test)",
+      "Bash(sam build)",
+      "Bash(sam local:*)",
+      "PowerShell(npm install)",
+      "PowerShell(npm run:*)",
+      "PowerShell(npm test)",
+      "PowerShell(sam build)",
+      "PowerShell(sam local:*)"
+    ]
+  }
+}

@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "build": "sam build",
+    "openapi": "tsp compile main.tsp && npm run openapi:aws",
+    "openapi:aws": "node scripts/inject-apigw-integration.mjs",
     "test": "jest",
     "local:api": "sam local start-api",
     "local:invoke": "sam local invoke UserServiceFunction",
@@ -13,9 +15,16 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.145",
     "@types/jest": "^30.0.0",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.10.1",
+    "@typespec/compiler": "^1.12.0",
+    "@typespec/http": "^1.12.0",
+    "@typespec/openapi": "^1.12.0",
+    "@typespec/openapi3": "^1.12.0",
+    "@typespec/rest": "^0.82.0",
     "esbuild": "^0.24.0",
     "jest": "^30",
+    "js-yaml": "^4.1.1",
     "ts-jest": "^29",
     "typescript": "~5.9.3"
   },

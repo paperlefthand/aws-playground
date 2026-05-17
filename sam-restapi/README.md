@@ -25,6 +25,23 @@
 npm install
 ```
 
+## OpenAPI 生成
+
+`main.tsp` から OpenAPI 仕様を生成する:
+
+```bash
+npm run openapi
+```
+
+これにより 2 つのファイルが生成される:
+
+- `openapi/openapi.yaml` — 純粋な OpenAPI 仕様 (ドキュメント・他 emitter 用)。出力先・バージョンは `tspconfig.yaml` で設定
+- `openapi/openapi-aws.yaml` — 上記に各 operation の `x-amazon-apigateway-integration` (Lambda proxy 統合) を注入したもの。`template.yaml` の `AWS::Serverless::Api.DefinitionBody` から `AWS::Include` で取り込まれ、API Gateway のルーティングに使われる
+
+注入処理は [scripts/inject-apigw-integration.mjs](scripts/inject-apigw-integration.mjs) が担当。Lambda ARN は `Fn::Sub` を埋めておき、CloudFormation 側で解決させる。
+
+`sam build` / `sam local` / `sam deploy` を実行する前に必ず `npm run openapi` を走らせる。
+
 ## 単体テスト
 
 ```bash
@@ -64,5 +81,5 @@ npm run deploy
 ## 備考
 
 - `main.tsp` の型は `src/types.ts` に手動で同期している。
-- 単一 Lambda 内でルーティングする構成。
+- API Gateway のパス/メソッドは `main.tsp` → `openapi/openapi-aws.yaml` から流れてくる。Lambda 内では `src/router.ts` が同じパスを再ディスパッチする (proxy integration のため)。
 - DynamoDB テーブルは枠だけ用意してあり、スタブ実装段階では使用していない。

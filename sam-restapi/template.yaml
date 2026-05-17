@@ -13,6 +13,16 @@ Globals:
         TABLE_NAME: !Ref ItemsTable
 
 Resources:
+  UserServiceApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: openapi/openapi-aws.yaml
+
   ItemsTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -37,25 +47,11 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref ItemsTable
       Events:
-        UsersRoot:
+        ApiEvents:
           Type: Api
           Properties:
-            Path: /users
-            Method: ANY
-        UsersProxy:
-          Type: Api
-          Properties:
-            Path: /users/{proxy+}
-            Method: ANY
-        MeRoot:
-          Type: Api
-          Properties:
-            Path: /me
-            Method: ANY
-        MeProxy:
-          Type: Api
-          Properties:
-            Path: /me/{proxy+}
+            RestApiId: !Ref UserServiceApi
+            Path: /{proxy+}
             Method: ANY
     Metadata:
       BuildMethod: esbuild
@@ -71,7 +67,7 @@ Resources:
 Outputs:
   ApiUrl:
     Description: API Gateway endpoint URL
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+    Value: !Sub "https://${UserServiceApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
   FunctionArn:
     Description: Lambda Function ARN
     Value: !GetAtt UserServiceFunction.Arn

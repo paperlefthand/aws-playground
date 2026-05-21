@@ -1,5 +1,7 @@
 import type { APIGatewayProxyEvent } from "aws-lambda";
-import type { Role } from "./types.js";
+import type { components } from "./types.js";
+
+type Role = components["schemas"]["Role"];
 
 export interface Principal {
   userId: string;

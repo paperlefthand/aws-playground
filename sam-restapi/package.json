@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "sam build",
-    "openapi": "tsp compile main.tsp && npm run openapi:aws",
+    "build": "sam build && node scripts/fix-sourcemaps.mjs",
+    "openapi": "tsp compile main.tsp && npm run openapi:aws && npm run openapi:types",
     "openapi:aws": "node scripts/inject-apigw-integration.mjs",
+    "openapi:types": "openapi-typescript openapi/openapi.yaml -o src/types.ts",
     "test": "jest",
     "local:api": "dotenv -e .env -- cross-env PYTHONUTF8=1 sam local start-api",
+    "local:api:debug": "dotenv -e .env -- cross-env PYTHONUTF8=1 sam local start-api -d 5858 --warm-containers EAGER",
     "local:invoke": "dotenv -e .env -- cross-env PYTHONUTF8=1 sam local invoke UserServiceFunction",
     "deploy": "dotenv -e .env -- node scripts/deploy.mjs",
     "destroy": "dotenv -e .env -- cross-env-shell \"sam delete --stack-name sam-restapi --region ap-northeast-1 --profile $AWS_PROFILE --no-prompts\"",
@@ -28,6 +30,7 @@
     "esbuild": "^0.24.0",
     "jest": "^30",
     "js-yaml": "^4.1.1",
+    "openapi-typescript": "^7.13.0",
     "ts-jest": "^29",
     "typescript": "~5.9.3"
   },

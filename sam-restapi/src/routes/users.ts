@@ -1,12 +1,13 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { err, noContent, ok } from "../responses.js";
 import type { Principal } from "../auth.js";
-import type {
-  Post,
-  UpdateRoleRequest,
-  User,
-  UserList,
-} from "../types.js";
+import type { components } from "../types.js";
+
+type Schemas = components["schemas"];
+type Post = Schemas["Post"];
+type UpdateRoleRequest = Schemas["UpdateRoleRequest"];
+type User = Schemas["User"];
+type UserList = Schemas["UserList"];
 
 const sampleUser = (userId: string, role: User["role"] = "member"): User => ({
   userId,

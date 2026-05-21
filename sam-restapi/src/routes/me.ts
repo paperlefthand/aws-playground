@@ -1,16 +1,17 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { err, ok } from "../responses.js";
 import type { Principal } from "../auth.js";
-import type {
-  Cart,
-  Notification,
-  Order,
-  OrderStatus,
-  Post,
-  UpdateNotificationRequest,
-  UpdateProfileRequest,
-  UserProfile,
-} from "../types.js";
+import type { components } from "../types.js";
+
+type Schemas = components["schemas"];
+type Cart = Schemas["Cart"];
+type Notification = Schemas["Notification"];
+type Order = Schemas["Order"];
+type OrderStatus = Schemas["OrderStatus"];
+type Post = Schemas["Post"];
+type UpdateNotificationRequest = Schemas["UpdateNotificationRequest"];
+type UpdateProfileRequest = Schemas["UpdateProfileRequest"];
+type UserProfile = Schemas["UserProfile"];
 
 const requireAuth = (p: Principal | null): APIGatewayProxyResult | null =>
   p ? null : err(401, "unauthorized", "Authentication required");
@@ -96,7 +97,7 @@ export const listOrders = (
     {
       id: "o-1",
       userId: principal!.userId,
-      total: "10.00",
+      total: 10.0,
       currency: "JPY",
       status: "paid",
       createdAt: "2026-01-01T00:00:00Z",

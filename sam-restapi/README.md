@@ -42,10 +42,11 @@ cp .env.example .env   # 値を埋める (詳細は「環境変数」セクシ�
 npm run openapi
 ```
 
-これにより 2 つのファイルが生成される:
+これにより 3 つのファイルが生成される:
 
 - `openapi/openapi.yaml` — 純粋な OpenAPI 仕様 (ドキュメント・他 emitter 用)。出力先・バージョンは `tspconfig.yaml` で設定
 - `openapi/openapi-aws.yaml` — 上記に各 operation の `x-amazon-apigateway-integration` (Lambda proxy 統合) を注入したもの。`template.yaml` の `AWS::Serverless::Api.DefinitionBody` から `AWS::Include` で取り込まれ、API Gateway のルーティングに使われる
+- `src/types.ts` — `openapi-typescript` で `openapi.yaml` から生成した TypeScript 型 (`paths` / `components` / `operations`)。Lambda 実装側はここから `components["schemas"]["User"]` の形で参照する
 
 注入処理は [scripts/inject-apigw-integration.mjs](scripts/inject-apigw-integration.mjs) が担当。Lambda ARN は `Fn::Sub` を埋めておき、CloudFormation 側で解決させる。
 
@@ -77,6 +78,22 @@ curl -i http://127.0.0.1:3000/users -H 'Authorization: Bearer u-1:admin'
 ```
 
 `Authorization` ヘッダはスタブ実装で `Bearer <userId>:<role>` 形式を受け付ける (例: `u-1:admin`)。
+
+### デバッグ実行 (VS Code からアタッチ)
+
+`sam local start-api` を `-d <port>` 付きで起動すると、Lambda コンテナが Node の inspector を当該ポートで開く。`--warm-containers EAGER` を併用してコンテナを使い回さないと、リクエスト毎に新コンテナが立ち上がる際に 5858 ポートが衝突して 502 になる。
+
+```bash
+npm run local:api:debug     # localhost:3000 で API, 5858 で inspector を待ち受け
+```
+
+VS Code 側は [.vscode/launch.json](.vscode/launch.json) の `Attach to SAM Local` を実行する。`template.yaml` の esbuild は `Sourcemap: true` だが、SAM が一時ディレクトリで TS をコンパイルする都合で sourcemap の `sources` が消滅した一時パスを指すため、`npm run build` の中で [scripts/fix-sourcemaps.mjs](scripts/fix-sourcemaps.mjs) が `.aws-sam/build/**/*.js.map` の `sources` を `src/**/*.ts` に書き戻している。これにより TypeScript の元コードにそのままブレークポイントを置ける。
+
+別ターミナルでリクエストを投げるとブレークポイントで停止する:
+
+```bash
+curl -i http://127.0.0.1:3000/me -H 'Authorization: Bearer u-1:member'
+```
 
 ## デプロイ
 
@@ -113,6 +130,6 @@ npm run deploy
 
 ## 備考
 
-- `main.tsp` の型は `src/types.ts` に手動で同期している。
+- `src/types.ts` は `npm run openapi` で `openapi/openapi.yaml` から自動生成される (gitignore 対象)。`main.tsp` を変更したら必ず `npm run openapi` を流してから commit する。
 - API Gateway のパス/メソッドは `main.tsp` → `openapi/openapi-aws.yaml` から流れてくる。Lambda 内では `src/router.ts` が同じパスを再ディスパッチする (proxy integration のため)。
 - DynamoDB テーブルは枠だけ用意してあり、スタブ実装段階では使用していない。

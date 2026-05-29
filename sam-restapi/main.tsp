@@ -6,6 +6,11 @@ using TypeSpec.Http;
 // ============================================================
 // サービス定義
 // ============================================================
+// 認証: API Gateway 側で Cognito User Pool Authorizer を有効化しており、
+//       Authorization ヘッダには Cognito User Pool が発行する ID Token (JWT) を Bearer で渡す。
+//       OpenAPI 仕様上は HTTP Bearer (BearerAuth) として表現し、
+//       AWS 向け出力時に `scripts/inject-apigw-integration.mjs` が
+//       cognito_user_pools 形式の Authorizer 定義へ差し替える。
 @service(#{ title: "User Service" })
 @server("https://api.example.com", "Production")
 @useAuth(BearerAuth)
@@ -197,11 +202,13 @@ interface Users {
   /** 特定ユーザーの公開投稿一覧（誰でも閲覧可） */
   @route("{userId}/posts")
   @get
+  @useAuth(NoAuth)
   listPosts(@path userId: string): Post[] | NotFound | ErrorResponse;
 
   /** 特定ユーザーのフォロワー（公開） */
   @route("{userId}/followers")
   @get
+  @useAuth(NoAuth)
   listFollowers(@path userId: string): User[] | NotFound | ErrorResponse;
 }
 

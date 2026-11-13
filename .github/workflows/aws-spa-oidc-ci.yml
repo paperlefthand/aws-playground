@@ -1,0 +1,95 @@
+name: aws-spa-oidc CI
+
+# モノレポ内の aws-spa-oidc/ だけを対象にする
+on:
+  push:
+    branches: [main]
+    paths:
+      - "aws-spa-oidc/**"
+      - ".github/workflows/aws-spa-oidc-ci.yml"
+  pull_request:
+    paths:
+      - "aws-spa-oidc/**"
+      - ".github/workflows/aws-spa-oidc-ci.yml"
+
+# 同じブランチへの push が重なったら古いほうを止める
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: aws-spa-oidc
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Vite+
+        run: npm install -g vite-plus
+
+      - name: Install dependencies
+        run: vp install
+
+      # フォーマット / lint / 型チェック
+      - name: Check
+        run: vp check
+
+      # ユニットテストと CDK assertions
+      - name: Test
+        run: vp test
+
+      - name: Build
+        run: vp build
+
+      # SPEC 4.3: CSP script-src 'self' / style-src 'self' の前提
+      - name: Verify no inline script or style
+        run: vp run verify:no-inline
+
+      # SPEC 1 の禁止事項。混入すると CSP から 'unsafe-eval' を外せなくなる
+      - name: Verify no eval or new Function
+        run: vp run verify:bundle
+
+      # SPEC 4.6: vulnMode=false のビルドに検証用ページが含まれないこと。
+      # 実ビルドを 2 回走らせるので他の検査の後に置く
+      - name: Verify vulnMode tree-shaking
+        run: vp run verify:vuln-mode
+
+  synth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Vite+
+        run: npm install -g vite-plus
+
+      - name: Install dependencies
+        run: vp install
+
+      # cdk-nag は synth 時に評価され、未 acknowledge の指摘があれば失敗する。
+      # AWS 資格情報は不要(アカウント ID はテンプレート上のトークンのまま)。
+      - name: Synth (default context)
+        working-directory: aws-spa-oidc/infra
+        run: npx cdk synth --quiet
+
+      # 段階導入の各フェーズが合成できること
+      - name: Synth (each phase)
+        working-directory: aws-spa-oidc/infra
+        run: |
+          for phase in p0 p1 p2 p3; do
+            echo "::group::phase=$phase"
+            npx cdk synth --quiet -c "phase=$phase"
+            echo "::endgroup::"
+          done
+
+      - name: Synth (context variations)
+        working-directory: aws-spa-oidc/infra
+        run: |
+          npx cdk synth --quiet -c trustedTypes=true -c cspMode=enforce
+          npx cdk synth --quiet -c baselineEnabled=false
+          npx cdk synth --quiet -c namePrefix=ci-lab -c rateLimitApi=20

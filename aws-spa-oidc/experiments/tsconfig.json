@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    // 実験スクリプトは素の .mjs(Node がそのまま実行する)。
+    // テストから型付きで import できるよう JSDoc から推論させる
+    "allowJs": true
+  },
+  "include": [
+    "lib",
+    "E1-zap",
+    "E2-headers",
+    "E3-csp",
+    "E4-waf-tuning",
+    "E5-rate",
+    "E6-credstuffing",
+    "E7-overhead",
+    "E8-xss",
+    "test"
+  ]
+}

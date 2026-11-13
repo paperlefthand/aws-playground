@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowImportingTsExtensions": true,
+    // Lambda ハンドラは素の .mjs(ランタイムがそのまま読む)。
+    // テストから型付きで import できるよう JSDoc から型を推論させる
+    "allowJs": true,
+    // `node bin/app.ts`(Node の型ストリッピング)で動かすため、
+    // 実行時コードを生成する TS 構文(enum / namespace / parameter property)を禁止する
+    "erasableSyntaxOnly": true
+  },
+  "include": ["bin", "config", "functions", "lib", "test"]
+}

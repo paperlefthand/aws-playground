@@ -1,0 +1,7 @@
+{
+  "name": "experiments",
+  "version": "0.0.0",
+  "private": true,
+  "description": "実験スクリプト E1〜E8 (SPEC 4.7)",
+  "type": "module"
+}

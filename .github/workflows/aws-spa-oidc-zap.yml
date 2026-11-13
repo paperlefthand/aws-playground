@@ -1,0 +1,53 @@
+name: aws-spa-oidc ZAP baseline scan (E1)
+
+# ZAP はデプロイ済みの環境が前提で時間もかかるため、手動トリガのみ
+# (SPEC 4.8: ZAP は手動トリガ)。
+on:
+  workflow_dispatch:
+    inputs:
+      outputs_json:
+        description: >-
+          infra/cdk-outputs.json の中身(JSON)。対象はここに含まれるホストに
+          限定される。cdk deploy --all --outputs-file cdk-outputs.json の出力を貼る。
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: aws-spa-oidc
+
+jobs:
+  zap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Vite+
+        run: npm install -g vite-plus
+
+      - name: Install dependencies
+        run: vp install
+
+      # 実験スクリプトは CDK 出力からしか対象を受け取らない(安全弁 / ADR-009)。
+      # ここで書き出したホスト以外へはアクセスできない。
+      - name: Write CDK outputs
+        env:
+          OUTPUTS_JSON: ${{ inputs.outputs_json }}
+        run: |
+          mkdir -p infra
+          printf '%s' "$OUTPUTS_JSON" > infra/cdk-outputs.json
+          node -e "JSON.parse(require('node:fs').readFileSync('infra/cdk-outputs.json','utf8'))"
+
+      - name: Run ZAP baseline scan
+        run: node experiments/E1-zap/run.mjs
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e1-zap-results
+          path: aws-spa-oidc/experiments/results/E1-zap/
+          if-no-files-found: warn

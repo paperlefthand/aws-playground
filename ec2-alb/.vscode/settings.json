@@ -1,0 +1,14 @@
+{
+  // app/ (FastAPI) の仮想環境。`cd app && uv sync` で作成される
+  "python.defaultInterpreterPath": "${workspaceFolder}/app/.venv/bin/python",
+  "python.terminal.activateEnvironment": false,
+  // cdk-infra は tsc が .ts の隣に .js / .d.ts を出力するのでエクスプローラーから隠す
+  "files.exclude": {
+    "cdk-infra/**/*.js": { "when": "$(basename).ts" },
+    "cdk-infra/{bin,lib,test}/**/*.d.ts": true
+  },
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true
+  }
+}

@@ -1,0 +1,14 @@
+[project]
+name = "ec2-alb-app"
+version = "0.1.0"
+description = "FastAPI app deployed on EC2 behind an ALB"
+# scripts/user-data.sh が EC2 上で python3.13 を使うため合わせる
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+]
+
+[tool.uv]
+# ライブラリとしてビルドしない(アプリケーション)
+package = false

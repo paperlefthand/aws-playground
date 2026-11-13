@@ -1,0 +1,42 @@
+{
+  // 各サンプルを独立したルートフォルダとして扱うマルチルートワークスペース。
+  // サンプル固有の設定は <sample>/.vscode/{settings,launch,tasks,extensions}.json に置く
+  // (そのフォルダにだけ効く)。ここには全サンプル共通の設定だけを書く。
+  "folders": [
+    { "name": "aws-spa-oidc", "path": "aws-spa-oidc" },
+    { "name": "ec2-alb", "path": "ec2-alb" },
+    { "name": "ecs-bg-deployment", "path": "ecs-bg-deployment" },
+    { "name": "sam-restapi", "path": "sam-restapi" },
+    // ルート直下のファイル(.gitignore, .github/ など)を編集するためのフォルダ。
+    // サンプルのディレクトリは下の files.exclude でここからは隠す。
+    { "name": "(root)", "path": "." }
+  ],
+  "settings": {
+    // パターンは各フォルダからの相対パスで評価されるため、
+    // サンプル名に一致するのは (root) フォルダの中だけになる。
+    "files.exclude": {
+      "aws-spa-oidc": true,
+      "ec2-alb": true,
+      "ecs-bg-deployment": true,
+      "sam-restapi": true
+    },
+    "search.exclude": {
+      "**/cdk.out": true,
+      "**/.aws-sam": true,
+      "**/node_modules": true,
+      "**/.venv": true
+    },
+    "files.watcherExclude": {
+      "**/cdk.out/**": true,
+      "**/.aws-sam/**": true,
+      "**/.venv/**": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "amazonwebservices.aws-toolkit-vscode",
+      "redhat.vscode-yaml",
+      "github.vscode-github-actions"
+    ]
+  }
+}

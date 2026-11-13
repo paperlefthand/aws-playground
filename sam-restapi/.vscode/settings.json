@@ -1,0 +1,7 @@
+{
+  // `npm run openapi` で main.tsp から生成されるファイル。手で編集しないよう読み取り専用にする
+  "files.readonlyInclude": {
+    "openapi/**": true,
+    "src/types.ts": true
+  }
+}

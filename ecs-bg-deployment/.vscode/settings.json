@@ -1,0 +1,7 @@
+{
+  // tsc が .ts の隣に .js / .d.ts を出力するのでエクスプローラーから隠す
+  "files.exclude": {
+    "**/*.js": { "when": "$(basename).ts" },
+    "{bin,lib,test}/**/*.d.ts": true
+  }
+}

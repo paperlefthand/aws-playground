@@ -58,7 +58,8 @@ flowchart TB
 
 このプロジェクトを実行・デプロイするために、事前に以下のツールがインストール・設定されている必要があります。
 
-* **Node.js** (推奨バージョン: v18以上)
+* **Node.js** (バージョンは `.node-version` で固定)
+* **uv** (アプリ `app/` の Python 環境の管理。Python のバージョンは `app/.python-version` で固定)
 * **AWS CLI** (デプロイ先のAWSアカウントの認証情報のセットアップに必要)
 * **AWS CDK CLI** (`npm install -g aws-cdk` または `npx cdk` で実行可能)
 * デプロイ先のAWS環境のクレデンシャルが設定されていること（例: `~/.aws/credentials`）
@@ -102,6 +103,18 @@ npx cdk deploy
 ```
 
 *(必要に応じて、プロファイル指定を行う場合は `--profile <YOUR_PROFILE>` オプションを付与してください)*
+
+## アプリのローカル実行
+
+`app/` の FastAPI アプリは uv で依存関係を管理しています(EC2 上の `python3.13` に合わせて Python 3.13 を使用)。
+
+```bash
+cd app
+uv sync
+uv run --directory src uvicorn main:app --reload --port 8000
+```
+
+VS Code では「FastAPI (uvicorn --reload)」のデバッグ構成からも起動できます。
 
 ## テスト実行方法
 

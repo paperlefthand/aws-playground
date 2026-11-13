@@ -36,6 +36,12 @@ jobs:
       - name: Install dependencies
         run: vp install
 
+      # グローバルの vp はバージョン未固定(最新)で、vp test が同梱の新しい vitest で
+      # 動いてしまい、テストが import する vite-plus/test (lockfile のバージョン) と
+      # 食い違う。以降のステップは lockfile で固定したプロジェクトの vp を使う。
+      - name: Use project-local Vite+
+        run: echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"
+
       # フォーマット / lint / 型チェック
       - name: Check
         run: vp check
